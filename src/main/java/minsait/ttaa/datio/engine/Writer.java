@@ -1,5 +1,8 @@
 package minsait.ttaa.datio.engine;
 
+
+import minsait.ttaa.datio.common.Common;
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -11,11 +14,11 @@ abstract class Writer {
 
     static void write(Dataset<Row> df) {
         df
-                .coalesce(2)
+                .coalesce(1)
                 .write()
-                .partitionBy(teamPosition.getName())
-                .mode(Overwrite)
-                .parquet(OUTPUT_PATH);
+                .partitionBy("nationality")/*Se modifica por que mandaba error*/
+                .mode("overwrite") /*Se modifica por que mandaba error*/
+                .parquet(Common.OUTPUT_PATH);
     }
 
 }

@@ -1,5 +1,7 @@
 package minsait.ttaa.datio.engine;
 
+import minsait.ttaa.datio.common.naming.PlayerOutput;
+import org.apache.spark.annotation.Private;
 import org.apache.spark.sql.Column;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -23,15 +25,34 @@ public class Transformer extends Writer {
         df.printSchema();
 
         df = cleanData(df);
-        df = exampleWindowFunction(df);
-        df = columnSelection(df);
+
+        //df = exampleWindowFunction(df);
+        //df = columnSelection(df);
 
         // for show 100 records after your transformations and show the Dataset schema
-        df.show(100, false);
-        df.printSchema();
+        //df.show(100, false);
+        //df.printSchema();
 
         // Uncomment when you want write your final output
-        //write(df);
+
+        df.show();
+
+        PlayerOutput ppl = new PlayerOutput();
+
+        Dataset<Row> select =  ppl.selectCols(df);
+        select.show();
+        Dataset<Row> getAgeRange= ppl.getAgeRange(select);
+        getAgeRange.show();
+        Dataset<Row> rankNationalityPosition = ppl.rankNationalityPosition(getAgeRange);
+        rankNationalityPosition.show();
+        Dataset<Row> potentialOverall = ppl.potentialOverall(rankNationalityPosition);
+        potentialOverall.show();
+        Dataset<Row> filterColumn = ppl.filterColumn(potentialOverall);
+        filterColumn.show();
+
+        //ppl.writeOutput("parquet",df);
+
+        write(filterColumn);
     }
 
     private Dataset<Row> columnSelection(Dataset<Row> df) {
